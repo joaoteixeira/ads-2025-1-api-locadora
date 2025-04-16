@@ -9,5 +9,7 @@ namespace ApiLocadora.Dtos
 
         [Required]
         public required string Genero { get; set; }
+
+
     }
 }

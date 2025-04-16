@@ -8,57 +8,59 @@ namespace ApiLocadora.Controllers
     [ApiController]
     public class FilmeController : ControllerBase
     {
-        private static List<Filme> listaFilmes = [ 
-            new Filme() { 
-                Nome = "Fast and Furious",
-                Genero = "Action"
-            },
-            new Filme
-            {
-                Nome = "Fast and Furious II",
-                Genero = "Action"
-            },
-            new Filme
-            {
-                Nome = "Fast and Furious - In Tokio",
-                Genero = "Action"
-            }
-        ];
+        private static List<Filme> filmes = new List<Filme>();
 
         [HttpGet]
-        public IActionResult Buscar()
+        public ActionResult<IEnumerable<Filme>> Get()
         {
-            return Ok(listaFilmes);
+            return filmes;
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Filme> Get(Guid id)
+        {
+            var filme = filmes.FirstOrDefault(f => f.Id == id);
+            if (filme == null)
+            {
+                return NotFound();
+            }
+            return filme;
         }
 
         [HttpPost]
-        public IActionResult Cadastrar([FromBody] FilmeDto item)
+        public ActionResult<Filme> Post([FromBody] Filme filme)
         {
-            var filme = new Filme();
-            filme.Nome = item.Nome;
-            filme.Genero = item.Genero;
-
-            listaFilmes.Add(filme);
-
-            return Ok(filme);
+            filme.Id = Guid.NewGuid();
+            filmes.Add(filme);
+            return CreatedAtAction(nameof(Get), new { id = filme.Id }, filme);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Atualizar(Guid id, [FromBody] FilmeDto item)
+        public IActionResult Put(Guid id, [FromBody] Filme filme)
         {
-            //Exemplo de NotFound
-            if(id != Guid.NewGuid())
+            var filmeExistente = filmes.FirstOrDefault(f => f.Id == id);
+            if (filmeExistente == null)
             {
                 return NotFound();
             }
 
-            return Ok();
+            filmeExistente.Nome = filme.Nome;
+            filmeExistente.Genero = filme.Genero;
+
+            return NoContent();
         }
-        
+
         [HttpDelete("{id}")]
-        public IActionResult Remover(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            return Ok();
+            var filme = filmes.FirstOrDefault(f => f.Id == id);
+            if (filme == null)
+            {
+                return NotFound();
+            }
+
+            filmes.Remove(filme);
+            return NoContent();
         }
     }
 }
