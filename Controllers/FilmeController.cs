@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ApiLocadora.Dtos;
+using ApiLocadora.DataContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiLocadora.Controllers
 {
@@ -8,59 +10,89 @@ namespace ApiLocadora.Controllers
     [ApiController]
     public class FilmeController : ControllerBase
     {
-        private static List<Filme> filmes = new List<Filme>();
+        private readonly AppDbContext _context;
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Filme>> Get()
+        public FilmeController(AppDbContext context)
         {
-            return filmes;
+            _context = context;
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Filme> Get(Guid id)
+        [HttpGet]
+
+        public async Task<IActionResult> Buscar()
         {
-            var filme = filmes.FirstOrDefault(f => f.Id == id);
-            if (filme == null)
-            {
-                return NotFound();
-            }
-            return filme;
+            var listaFilmes = await _context.Filmes.ToListAsync();
+            return Ok(listaFilmes);
         }
 
         [HttpPost]
-        public ActionResult<Filme> Post([FromBody] Filme filme)
+        public async Task<IActionResult> Cadastrar([FromBody] FilmeDto item)
         {
-            filme.Id = Guid.NewGuid();
-            filmes.Add(filme);
-            return CreatedAtAction(nameof(Get), new { id = filme.Id }, filme);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Put(Guid id, [FromBody] Filme filme)
-        {
-            var filmeExistente = filmes.FirstOrDefault(f => f.Id == id);
-            if (filmeExistente == null)
+            var filme = new Filme
             {
-                return NotFound();
-            }
+                Nome = item.Nome,
+                Genero = item.Genero
+            };
 
-            filmeExistente.Nome = filme.Nome;
-            filmeExistente.Genero = filme.Genero;
+            await _context.Filmes.AddAsync(filme);
+            await _context.SaveChangesAsync();
 
-            return NoContent();
+            //return CreatedAtAction(nameof(Buscar), new { id = filme.Id }, filme);
+            return Created("", filme);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
-        {
-            var filme = filmes.FirstOrDefault(f => f.Id == id);
-            if (filme == null)
-            {
-                return NotFound();
-            }
+        //private static List<Filme> filmes = new List<Filme>();
 
-            filmes.Remove(filme);
-            return NoContent();
-        }
+        //public ActionResult<IEnumerable<Filme>> Get()
+        //{
+        //    return filmes;
+        //}
+
+        //[HttpGet("{id}")]
+        //public ActionResult<Filme> Get(Guid id)
+        //{
+        //    var filme = filmes.FirstOrDefault(f => f.Id == id);
+        //    if (filme == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return filme;
+        //}
+
+        //[HttpPost]
+        //public ActionResult<Filme> Post([FromBody] Filme filme)
+        //{
+        //    filme.Id = Guid.NewGuid();
+        //    filmes.Add(filme);
+        //    return CreatedAtAction(nameof(Get), new { id = filme.Id }, filme);
+        //}
+
+        //[HttpPut("{id}")]
+        //public IActionResult Put(Guid id, [FromBody] Filme filme)
+        //{
+        //    var filmeExistente = filmes.FirstOrDefault(f => f.Id == id);
+        //    if (filmeExistente == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    filmeExistente.Nome = filme.Nome;
+        //    filmeExistente.Genero = filme.Genero;
+
+        //    return NoContent();
+        //}
+
+        //[HttpDelete("{id}")]
+        //public IActionResult Delete(Guid id)
+        //{
+        //    var filme = filmes.FirstOrDefault(f => f.Id == id);
+        //    if (filme == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    filmes.Remove(filme);
+        //    return NoContent();
+        //}
     }
 }
