@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ApiLocadora.Dtos;
+using ApiLocadora.Models;
+using ApiLocadora.DataContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiLocadora.Controllers
 {
@@ -8,39 +11,38 @@ namespace ApiLocadora.Controllers
     [ApiController]
     public class FilmeController : ControllerBase
     {
-        private static List<Filme> listaFilmes = [ 
-            new Filme() { 
-                Nome = "Fast and Furious",
-                Genero = "Action"
-            },
-            new Filme
-            {
-                Nome = "Fast and Furious II",
-                Genero = "Action"
-            },
-            new Filme
-            {
-                Nome = "Fast and Furious - In Tokio",
-                Genero = "Action"
-            }
-        ];
+        private readonly AppDbContext _context;
+
+        public FilmeController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
-        public IActionResult Buscar()
+        public async Task<IActionResult> Buscar()
         {
+
+            var listaFilmes = await _context.Filmes.ToListAsync();
+
             return Ok(listaFilmes);
         }
 
         [HttpPost]
-        public IActionResult Cadastrar([FromBody] FilmeDto item)
+        public async Task<IActionResult> Cadastrar([FromBody] FilmeDto item)
         {
-            var filme = new Filme();
-            filme.Nome = item.Nome;
-            filme.Genero = item.Genero;
+            var data = item.AnoLancamento;
 
-            listaFilmes.Add(filme);
+            var filme = new Filme
+            {
+                Nome = item.Nome,
+                Genero = item.Genero,
+                AnoLancamento =  new DateOnly(data.Year, data.Month, data.Day)
+            };
 
-            return Ok(filme);
+            await _context.Filmes.AddAsync(filme);
+            await _context.SaveChangesAsync();
+
+            return Created("", filme);
         }
 
         [HttpPut("{id}")]
