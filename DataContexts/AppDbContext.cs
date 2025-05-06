@@ -10,5 +10,7 @@ namespace ApiLocadora.DataContexts
 
         public DbSet<Filme> Filmes { get; set; }
 
+        public DbSet<Genero> Generos { get; set; }
+
     }
 }

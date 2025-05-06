@@ -19,7 +19,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     .UseSnakeCaseNamingConvention()
 );
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

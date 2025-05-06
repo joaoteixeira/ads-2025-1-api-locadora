@@ -49,12 +49,12 @@ namespace ApiLocadora.Controllers
         public IActionResult Atualizar(Guid id, [FromBody] FilmeDto item)
         {
             //Exemplo de NotFound
-            if(id != Guid.NewGuid())
-            {
-                return NotFound();
-            }
+            //if(id != Guid.NewGuid())
+            //{
+            //    return NotFound();
+            //}
 
-            return Ok();
+            return Ok(new { Nome = "Joao", email = "joao.teixeira@ifro.edu.br" });
         }
         
         [HttpDelete("{id}")]

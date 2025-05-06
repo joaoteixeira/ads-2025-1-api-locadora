@@ -5,6 +5,7 @@ namespace ApiLocadora.Dtos
     public class FilmeDto
     {
         [Required]
+        [MinLength(5)]
         public required string Nome { get; set; }
 
         [Required]
