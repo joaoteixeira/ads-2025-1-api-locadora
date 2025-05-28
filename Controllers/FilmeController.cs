@@ -14,15 +14,30 @@ namespace ApiLocadora.Controllers
     {
         private readonly FilmeService _service;
 
-        public FilmeController(FilmeService service)
+        private readonly AppDbContext _context;
+
+        public FilmeController(FilmeService service, AppDbContext context)
         {
             _service = service;
+            _context = context; 
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var listaFilmes = await _service.GetAll();
+            //var listaFilmes = await _service.GetAll();
+
+            var listaFilmes = await _context.Filmes
+                .Include(e => e.Estudio)
+                //.Select(e => new
+                //{
+                //    e.Id,
+                //    e.Nome,
+                //    e.AnoLancamento,
+                //    e.Genero,
+                //    Estudio = new { e.Estudio.Id, e.Estudio.Nome },
+                //})
+                .ToListAsync();
 
             return Ok(listaFilmes);
         }

@@ -10,7 +10,18 @@ namespace ApiLocadora.DataContexts
 
         public DbSet<Filme> Filmes { get; set; }
 
+        public DbSet<Estudio> Estudios { get; set; }
+
         public DbSet<Genero> Generos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Filme>()
+                .HasOne(e => e.Estudio)
+                .WithMany(e => e.Filmes)
+                .HasForeignKey(e => e.EstudioId)
+                .IsRequired(true);
+        }
 
     }
 }
