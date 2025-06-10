@@ -20,7 +20,7 @@ namespace ApiLocadora.DataContexts
                 .HasOne(e => e.Estudio)
                 .WithMany(e => e.Filmes)
                 .HasForeignKey(e => e.EstudioId)
-                .IsRequired(true);
+                .IsRequired(false);
         }
 
     }

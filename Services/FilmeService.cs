@@ -1,6 +1,7 @@
 ﻿using ApiLocadora.DataContexts;
 using ApiLocadora.Dtos;
 using ApiLocadora.Models;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiLocadora.Services
@@ -9,16 +10,27 @@ namespace ApiLocadora.Services
     {
         private readonly AppDbContext _context;
 
-        public FilmeService(AppDbContext context)
+        private readonly IMapper _mapper;
+
+        public FilmeService(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ICollection<Filme>> GetAll()
         {
-            var list = await _context.Filmes.ToListAsync();
+            try
+            {
+                var list = await _context.Filmes.Include(e => e.Estudio).ToListAsync();
 
-            return list;
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
 
         public async Task<Filme?> GetOneById(int id)
@@ -38,14 +50,16 @@ namespace ApiLocadora.Services
         {
             try
             {
-                var data = filme.AnoLancamento;
+                //var data = filme.AnoLancamento;
 
-                var newFilme = new Filme
-                {
-                    Nome = filme.Nome,
-                    Genero = filme.Genero,
-                    AnoLancamento = new DateOnly(data.Year, data.Month, data.Day)
-                };
+                //var newFilme = new Filme
+                //{
+                //    Nome = filme.Nome,
+                //    Genero = filme.Genero,
+                //    AnoLancamento = new DateOnly(data.Year, data.Month, data.Day)
+                //};
+
+                var newFilme = _mapper.Map<Filme>(filme);
 
                 await _context.Filmes.AddAsync(newFilme);
                 await _context.SaveChangesAsync();

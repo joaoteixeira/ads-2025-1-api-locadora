@@ -5,6 +5,7 @@ using ApiLocadora.Models;
 using ApiLocadora.DataContexts;
 using Microsoft.EntityFrameworkCore;
 using ApiLocadora.Services;
+using MySqlConnector;
 
 namespace ApiLocadora.Controllers
 {
@@ -25,21 +26,16 @@ namespace ApiLocadora.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            //var listaFilmes = await _service.GetAll();
+            try
+            {
+                var listaFilmes = await _service.GetAll();
 
-            var listaFilmes = await _context.Filmes
-                .Include(e => e.Estudio)
-                //.Select(e => new
-                //{
-                //    e.Id,
-                //    e.Nome,
-                //    e.AnoLancamento,
-                //    e.Genero,
-                //    Estudio = new { e.Estudio.Id, e.Estudio.Nome },
-                //})
-                .ToListAsync();
-
-            return Ok(listaFilmes);
+                return Ok(listaFilmes);
+            }
+            catch (Exception)
+            {
+                return Problem("Ocorreram erros ao processar a informação!");
+            }
         }
 
         [HttpGet("{id}")]
