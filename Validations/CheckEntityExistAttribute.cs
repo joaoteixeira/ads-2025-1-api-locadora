@@ -1,4 +1,5 @@
 ﻿using ApiLocadora.DataContexts;
+using ApiLocadora.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,11 +12,11 @@ namespace ApiLocadora.Validations
         private readonly AppDbContext _context;
 
 
-        public CheckEntityExistAttribute(AppDbContext context)
+        public CheckEntityExistAttribute()
         {
             //string comparisonProperty,
             //_comparisonProperty = comparisonProperty;
-            _context = context;
+            //_context = context;
 
             //serviceProvider = AppDependencyResolver.Current.GetService<IServiceProvider>();
         }
@@ -31,16 +32,25 @@ namespace ApiLocadora.Validations
             //{
             //    return new ValidationResult(ErrorMessage = "End date must be later than start date");
             //}
-
+            FilmeService? service = validationContext.GetService(typeof(FilmeService)) as FilmeService;
+           
             var currentValue = (int) value;
 
-            var exist = _context.Generos.Where(x => x.Id == currentValue).Any();
+            if (service == null)
+            {
+                return new ValidationResult(ErrorMessage = "O gênero informado não foi encontrado!");
+            }
+
+            var exist = service.GetOneByIdG(currentValue);
+            Console.WriteLine("AQUI " + exist.ToString());
 
             if (!exist)
             {
                 return new ValidationResult(ErrorMessage = "O gênero informado não foi encontrado!");
             }
 
+
+            //return new ValidationResult(ErrorMessage = "O gênero informado não foi encontrado!");
             return ValidationResult.Success;
         }
     }

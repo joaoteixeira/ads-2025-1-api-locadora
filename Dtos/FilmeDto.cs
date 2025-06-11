@@ -17,7 +17,7 @@ namespace ApiLocadora.Dtos
         public required DateTime AnoLancamento { get; set; }
 
         [Required]
-        [CheckEntityExistAttribute]
+        [CheckEntityExist]
         public required int EstudioId { get; set; }
     }
 }

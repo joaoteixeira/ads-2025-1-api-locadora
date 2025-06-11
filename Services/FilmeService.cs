@@ -46,6 +46,20 @@ namespace ApiLocadora.Services
             }
         }
 
+        public  bool GetOneByIdG(int id)
+        {
+            try
+            {
+                var exist = _context.Estudios.Where(x=> x.Id == id).Any();
+
+                return exist;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<Filme?> Create(FilmeDto filme)
         {
             try
