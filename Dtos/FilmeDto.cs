@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ApiLocadora.Common.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiLocadora.Dtos
 {
@@ -13,5 +14,9 @@ namespace ApiLocadora.Dtos
         
         [Required]
         public required DateTime AnoLancamento { get; set; }
+
+        [Required]
+        [CheckExist]
+        public int EstudioId { get; set; }
     }
 }
